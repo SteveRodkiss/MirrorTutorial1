@@ -11,7 +11,7 @@ public class LaserGun : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -20,26 +20,28 @@ public class LaserGun : NetworkBehaviour
         if (isLocalPlayer && Input.GetMouseButtonDown(0))
         {
             //we want to shoot!
-            Shoot();
+            CmdShoot();
         }
     }
 
-    public void Shoot()
+    [Command]
+    public void CmdShoot()
     {
         //do a raycast to see where we hit
         Ray ray = new Ray(laserTransform.position, laserTransform.forward);
         if(Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
             //we hit something- draw the line
-            DrawLaser(laserTransform.position, hit.point);
+            RpcDrawLaser(laserTransform.position, hit.point);
         }
         else
         {
-            DrawLaser(laserTransform.position, laserTransform.position + laserTransform.forward * 100f);
+            RpcDrawLaser(laserTransform.position, laserTransform.position + laserTransform.forward * 100f);
         }
     }
 
-    void DrawLaser(Vector3 start, Vector3 end)
+    [ClientRpc]
+    void RpcDrawLaser(Vector3 start, Vector3 end)
     {
         //do the laser flas enumerator function
         StartCoroutine(LaserFlash(start, end));

@@ -37,6 +37,11 @@ public class FirstPersonController : NetworkBehaviour
     {
         cc = GetComponent<CharacterController>();
         cameraTransform = GetComponentInChildren<Camera>().transform;
+        if (!isLocalPlayer)
+        {
+            cameraTransform.GetComponent<Camera>().enabled = false;
+            cameraTransform.GetComponent<AudioListener>().enabled = false;
+        }
     }
 
     // Update is called once per frame
@@ -46,12 +51,7 @@ public class FirstPersonController : NetworkBehaviour
         {
             Look();
             Move();
-        }
-        else
-        {
-            cameraTransform.gameObject.SetActive(false);
-        }
- 
+        } 
     }
 
     void Look()
