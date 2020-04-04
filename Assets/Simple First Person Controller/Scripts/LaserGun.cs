@@ -33,11 +33,11 @@ public class LaserGun : NetworkBehaviour
         {
             //we hit something- draw the line
             //check if its a player
-            var player = hit.collider.gameObject.GetComponent<LaserGun>();
-            if (player)
+            var playerHealth = hit.collider.gameObject.GetComponent<PlayerHealth>();
+            if (playerHealth)
             {
                 //that means it's a player- respawn them
-                StartCoroutine(Respawn(hit.collider.gameObject));
+                playerHealth.Damage(20);
             }
 
             RpcDrawLaser(laserTransform.position, hit.point);
@@ -47,18 +47,6 @@ public class LaserGun : NetworkBehaviour
             RpcDrawLaser(laserTransform.position, laserTransform.position + laserTransform.forward * 100f);
         }
     }
-
-    [Server]
-    IEnumerator Respawn(GameObject go)
-    {
-        NetworkServer.UnSpawn(go);
-        Transform newPos = NetworkManager.singleton.GetStartPosition();
-        go.transform.position = newPos.position;
-        go.transform.rotation = newPos.rotation;
-        yield return new WaitForSeconds(1f);
-        NetworkServer.Spawn(go, go);
-    }
-
 
     [ClientRpc]
     void RpcDrawLaser(Vector3 start, Vector3 end)
