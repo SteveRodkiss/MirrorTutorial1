@@ -42,6 +42,7 @@ public class FirstPersonController : NetworkBehaviour
             cameraTransform.GetComponent<Camera>().enabled = false;
             cameraTransform.GetComponent<AudioListener>().enabled = false;
         }
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
