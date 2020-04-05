@@ -21,7 +21,7 @@ public class FirstPersonController : NetworkBehaviour
     public float jumpSpeed = 10f;
 
     //now the camera so we can move it up and down
-    Transform cameraTransform;
+    public Transform cameraTransform;
     float pitch = 0f;
     [Range(1f,90f)]
     public float maxPitch = 85f;
@@ -30,17 +30,20 @@ public class FirstPersonController : NetworkBehaviour
     [Range(0.5f, 5f)]
     public float mouseSensitivity = 2f;
 
+    public Animator animator;
+
+
     //the charachtercompononet for moving us
     CharacterController cc;
 
     private void Start()
     {
         cc = GetComponent<CharacterController>();
-        cameraTransform = GetComponentInChildren<Camera>().transform;
+        //cameraTransform = GetComponentInChildren<Camera>().transform;
         if (!isLocalPlayer)
         {
-            cameraTransform.GetComponent<Camera>().enabled = false;
-            cameraTransform.GetComponent<AudioListener>().enabled = false;
+            GetComponentInChildren<Camera>().enabled = false;
+            GetComponentInChildren<AudioListener>().enabled = false;
         }
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -75,6 +78,8 @@ public class FirstPersonController : NetworkBehaviour
         //update speed based onn the input
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         input = Vector3.ClampMagnitude(input, 1f);
+        //evaluate the moving parameter in animator
+        animator.SetBool("moving", input.magnitude > 0.1f);
         //transofrm it based off the player transform and scale it by movement speed
         Vector3 move = transform.TransformVector(input) * movementSpeed;
         //is it on the ground
@@ -85,6 +90,8 @@ public class FirstPersonController : NetworkBehaviour
             if (Input.GetButtonDown("Jump"))
             {
                 yVelocity = jumpSpeed;
+                animator.SetTrigger("jump");
+                GetComponent<NetworkAnimator>().SetTrigger("jump");
             }
         }
         //now add the gravity to the yvelocity
